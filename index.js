@@ -1,11 +1,11 @@
 class cache {
-    #store = new Map()
+    #store = new Map();
     #sweepQueue = new Array();
     lifetime;
 
     constructor(lifetime) {
         this.lifetime = lifetime;
-        this.#sweep()
+        this.#sweep();
     }
 
     set(key, value) {
@@ -14,16 +14,21 @@ class cache {
         return value;
     }
 
+    clear(key) {
+        this.#store.delete(key);
+        this.#sweepQueue = this.#sweepQueue.filter(item => item[0] != key);
+    };
+
     get(key) {
         try {
-            let value = this.#store.get(key).value;
-            this.#sweepQueue = this.#sweepQueue.filter(id => id[0] != key);
-            this.#sweepQueue.push([key, Date.now()])
-            return value
-        } catch {
-            return undefined
-        }
-    }
+            let value = this.#store.get(key);
+            this.#sweepQueue = this.#sweepQueue.filter(item => item[0] != key);
+            this.#sweepQueue.push([key, Date.now()]);
+            return value;
+        } catch (error) {
+            return undefined;
+        };
+    };
 
     #sweep() {
         setInterval(() => {
@@ -36,6 +41,8 @@ class cache {
                     this.#store.delete(key);
                 };
             } catch { }
-        }, 100)
-    }
+        }, 100);
+    };
 }
+
+module.exports = cache;
